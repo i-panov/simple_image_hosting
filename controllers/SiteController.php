@@ -31,7 +31,7 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        $uploadedImageNames = (array)Yii::$app->session->get('uploaded_image_names', []);
+        $uploadedImageNames = $this->uploadedImageNames();
 
         if ($uploadedImageNames) {
             $uploadedImageNames = array_filter($uploadedImageNames, function($name) {
@@ -62,7 +62,7 @@ class SiteController extends Controller
             $names = [];
 
             foreach ($model->images as $image) {
-                $name = $translit->translit($image->baseName) . uniqid('_') . '.' . $image->extension;
+                $name = $translit->translit($image->baseName, true, 'ru-en') . uniqid('_') . '.' . $image->extension;
                 $image->saveAs($this->storageDirectory() . "/$name");
 
                 $file = new File();
@@ -71,7 +71,7 @@ class SiteController extends Controller
                 $names[] = $file->name;
             }
 
-            Yii::$app->session->set('uploaded_image_names', $names);
+            $this->uploadedImageNames($names);
             Yii::$app->session->setFlash('success', 'Загружено');
         }
 
@@ -87,5 +87,19 @@ class SiteController extends Controller
         }
 
         return $path;
+    }
+
+    private function uploadedImageNames($add = null)
+    {
+        $key = 'uploaded_image_names';
+        $current = (array)Yii::$app->session->get($key, []);
+
+        if (!$add || !is_array($add)) {
+            return $current;
+        }
+
+        $next = array_unique($current + $add);
+        Yii::$app->session->set($key, $next);
+        return $next;
     }
 }
