@@ -9,6 +9,7 @@ use Yii;
 use yii\data\ArrayDataProvider;
 use yii\helpers\FileHelper;
 use yii\helpers\Json;
+use yii\helpers\VarDumper;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\UploadedFile;
@@ -47,7 +48,10 @@ class SiteController extends Controller
             $files = [];
         }
 
-        return $this->render('index', ['dataProvider' => new ArrayDataProvider(['allModels' => $files])]);
+        return $this->render('index', ['dataProvider' => new ArrayDataProvider([
+            'allModels' => $files,
+            'sort' => ['attributes' => ['name', 'created_at']],
+        ])]);
     }
 
     public function actionUploadImages()
@@ -62,7 +66,8 @@ class SiteController extends Controller
             $names = [];
 
             foreach ($model->images as $image) {
-                $name = $translit->translit($image->baseName, true, 'ru-en') . uniqid('_') . '.' . $image->extension;
+                $baseName = $translit->translit($image->baseName, true, 'ru-en');
+                $name = $baseName . uniqid('_', true) . '.' . $image->extension;
                 $image->saveAs($this->storageDirectory() . "/$name");
 
                 $file = new File();
@@ -98,7 +103,7 @@ class SiteController extends Controller
             return $current;
         }
 
-        $next = array_unique($current + $add);
+        $next = array_unique(array_merge($current, $add));
         Yii::$app->session->set($key, $next);
         return $next;
     }

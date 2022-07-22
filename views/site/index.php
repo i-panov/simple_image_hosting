@@ -32,7 +32,11 @@ echo \kartik\grid\GridView::widget([
             'label' => 'Изображение',
             'format' => 'raw',
             'content' => function(File $file) {
-                return Html::img('/storage/' . $file->name, ['width' => 100, 'height' => 100]);
+                $id = Html::encode('image_' . $file->name);
+                $path = '/storage/' . $file->name;
+                $img = Html::img($path, ['width' => 100, 'height' => 100]);
+                $modal = Html::tag('div', Html::img($path), ['id' => $id, 'class' => 'modal']);
+                return Html::a($img, "#$id", ['rel' => 'modal:open']) . $modal;
             },
         ],
     ],
