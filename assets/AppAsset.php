@@ -21,11 +21,10 @@ class AppAsset extends AssetBundle
     public $baseUrl = '@web';
     public $css = [
         'https://use.fontawesome.com/releases/v5.3.1/css/all.css',
-        'https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.css',
         'css/site.css',
     ];
     public $js = [
-        'https://cdnjs.cloudflare.com/ajax/libs/jquery-modal/0.9.1/jquery.modal.min.js',
+        '//cdn.jsdelivr.net/npm/sweetalert2@11',
         'js/site.js',
     ];
     public $depends = [
